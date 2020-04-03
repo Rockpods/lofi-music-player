@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Lofi</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+</head>
+<body>
+	<div class="switch">
+		<button id="btn2"><img src="icon/menu.svg" id="icon2"></button>
+	</div>
+	<div class="bg">
+		<div class="color"></div>
+	</div>
+	<div id="player"></div>
+	<div class="player">
+		<div class="layer">
+			<div class="prev">
+				<button><img src="icon/prev.svg"></button>
+			</div>
+			<div class="play">
+				<button id="btn"><img src="icon/play.svg" id="icon"></button>
+			</div>
+
+			<div class="next">
+				<button><img src="icon/next.svg"></button>
+			</div>
+			<div class="title" id="title"></div>
+			
+		</div>
+
+	</div>
+	
+
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+		const apiKey = "AIzaSyAKkNJJh2kbSgl31RObQuuEaS_6oRzT30Q";
+		const listVid = [];
+		const listVid2 = []
+		var listVideo;
+		var player;
+		var bg = document.getElementsByClassName('bg')[0];
+		var musicPlayer = document.getElementsByClassName('player')[0];
+		var body = document.getElementsByTagName('body')[0];
+		var tag = document.createElement('script');
+		var btn = document.getElementById('btn');
+		var btn2 = document.getElementById('btn2');
+	    var icon = document.getElementById('icon');
+	    var icon2 = document.getElementById('icon2');
+	    var para = document.getElementById('title');
+	    
+	    var rand;
+	    var rand2;
+	    var typeMusic = 0;
+		
+		const getPlayListItems = async playlistID => {
+			var token;
+			var resultArr = [];
+		    const result = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems`, {
+		      params: {
+		        part: 'id,snippet',
+		        maxResults: 50,
+		        playlistId: playlistID,
+		        key: apiKey
+		      }
+		    })
+			token = result.data.nextPageToken;
+			resultArr.push(result.data);
+			while (token) {
+				let result = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems`, {
+		      	params: {
+		        part: 'id,snippet',
+		        maxResults: 50,
+		        playlistId: playlistID,
+		        key: apiKey,
+				pageToken: token
+		      	}
+		    	})
+				token = result.data.nextPageToken;
+				resultArr.push(result.data);
+			}	
+			return resultArr;
+		};
+
+
+		getPlayListItems("UUWovDkXc7w0821EaKmznmCA")
+		.then(data => {
+			data.forEach(item => {
+		    	item.items.forEach(i => listVid.push({title: i.snippet.title, thumb: i.snippet.thumbnails.high.url, idVid: i.snippet.resourceId.videoId}));
+			});
+		    rand = Math.floor(Math.random()*listVid.length);
+		    tag.src = "https://www.youtube.com/iframe_api";
+			var firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+		});
+
+
+		function onYouTubeIframeAPIReady() {
+			player = new YT.Player('player', {
+			  height: '0',
+			  width: '0',
+			  videoId: listVid[rand].idVid,
+			  events: {
+			    'onReady': onPlayerReady,
+			    'onStateChange': onPlayerStateChange
+			  }
+			});
+		}
+
+		function onPlayerReady(event) {
+			player.setPlaybackQuality("small");
+			btn.style.display = "block";
+			
+			btn2.style.opacity = "0.8";
+			para.innerHTML = listVid[rand].title;
+			playButton(player.getPlayerState() !== 5);
+		}
+
+		btn.onclick = changeStatusPlay;
+
+		function playButton(play) {
+				icon.src = play ? "icon/pause.svg" : "icon/play.svg";
+		}
+
+	    function changeStatusPlay() {
+			if (player.getPlayerState() == 1 || player.getPlayerState() == 3) {
+				pauseVideo();
+				playButton(false);
+			} else if (player.getPlayerState() != 0) {
+				playVideo();
+	        	playButton(true);
+	        	
+	        } 
+	    }
+
+
+	    setInterval(function() {
+	    	if (player.getPlayerState() == 0) {
+	    		nextVideo();
+	    		playButton(true);
+	    	}
+	    }, 5000);
+
+	    function onPlayerStateChange(event) {
+		    if (event.data === 0) {
+		    	playButton(false); 
+		    }
+	    }
+
+		function playVideo() {
+			player.playVideo();
+		}
+
+		function pauseVideo() {
+			player.pauseVideo();
+		}
+		function nextVideo() {
+			rand = Math.round(Math.random()*listVid.length);
+			player.loadVideoById({videoId:listVid[rand].idVid});
+			para.innerHTML = listVid[rand].title;
+			
+			musicPlayer.style.backgroundImage = "url('https://source.unsplash.com/random/600*250/?landscape')";
+			bg.style.backgroundImage = "url('https://source.unsplash.com/random/600*250/?landscape')";
+			
+		}
+	
+    </script>
+</body>
+</html>
