@@ -206,14 +206,22 @@ function repeatVideo () {
 //Kiem tra co phai video private hoac delete khong
 function checkPrivate() {
 	if (listVid[rand].title == "Private video" || listVid[rand].title == "Deleted video") {
-		++rand;
+		if (rand == listVid.length - 1) {
+			rand = 0;
+		} else {
+			rand += 1;
+		}
 		checkPrivate();
 	}
 };
 
 function checkPrivateBack() {
 	if (listVid[rand].title == "Private video" || listVid[rand].title == "Deleted video") {
-		rand -= 1;
+		if (rand == 0) {
+			rand = listVid.length - 1;
+		} else {
+			rand -= 1;
+		}		
 		checkPrivateBack();
 	}
 };
@@ -258,4 +266,4 @@ setInterval(function() {
 		nextVideo();
 		playButton(true);
 	}
-}, 5000);
+}, 3000);
