@@ -1,5 +1,6 @@
 
-const apiKey = "AIzaSyAKkNJJh2kbSgl31RObQuuEaS_6oRzT30Q";
+const apiKeyList = ["AIzaSyAKkNJJh2kbSgl31RObQuuEaS_6oRzT30Q", "AIzaSyAvPUsjjqCxjx9ZlIZh-EcdiBAFbJOeoO0", "AIzaSyB56E3cgBh0TMpNi5WQJT9AMFtChFIeEIo"];
+var apiKey = apiKeyList[0];
 var listVid = [];
 var listVideo;
 var player;
@@ -67,7 +68,34 @@ getPlayListItems("UUWovDkXc7w0821EaKmznmCA")
     tag.src = "https://www.youtube.com/iframe_api";
 	var firstScriptTag = document.getElementsByTagName('script')[0];
 	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+})
+.catch(err => {
+	changeAPIKey(apiKeyList[1], err);
 });
+
+
+function changeAPIKey(newKey, err) {
+	if (err.response.data.error.errors[0].reason == "dailyLimitExceeded") {
+		apiKey = newKey;
+		getPlayListItems("UUWovDkXc7w0821EaKmznmCA")
+		.then(data => {
+			data.forEach(item => {
+	    	item.items.forEach(i => listVid.push({title: i.snippet.title, idVid: i.snippet.resourceId.videoId}));
+			
+			rand = Math.floor(Math.random()*listVid.length);
+		    checkPrivate();
+		    tag.src = "https://www.youtube.com/iframe_api";
+			var firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+		});
+		})
+		.catch(err => {
+			changeAPIKey(apiKeyList[2], err);
+		});
+
+		
+	}
+}
 
 
 function onYouTubeIframeAPIReady() {
