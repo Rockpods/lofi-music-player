@@ -1,5 +1,5 @@
 # lofi music player
 
-Music from Youtube by YoutubeAPI
+Music Player Youtube use YoutubeAPI
 
 https://s9mple.github.io/lofi-music-player/
