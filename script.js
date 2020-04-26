@@ -25,7 +25,7 @@ var para = document.getElementById('title');
 var rand;
 var repeatStatus = 0;
 
-//Request de lay Playlist Item
+//Request Playlist Item
 const getPlayListItems = async playlistID => {
 	var token;
 	var resultArr = [];
@@ -37,7 +37,7 @@ const getPlayListItems = async playlistID => {
         key: apiKey
       }
     })
-    //Lay NextPage Token
+    //Get NextPage Token
 	token = result.data.nextPageToken;
 	resultArr.push(result.data);
 	while (token) {
@@ -56,13 +56,13 @@ const getPlayListItems = async playlistID => {
 	return resultArr;
 };
 
-//Xu li Item de lay Title video va videoId
+//Get Title video and videoId
 getPlayListItems("UUWovDkXc7w0821EaKmznmCA")
 .then(data => {
 	data.forEach(item => {
     	item.items.forEach(i => listVid.push({title: i.snippet.title, idVid: i.snippet.resourceId.videoId}));
 	});
-	//Tao random index
+	//create random index
     rand = Math.floor(Math.random()*listVid.length);
     checkPrivate();
     tag.src = "https://www.youtube.com/iframe_api";
@@ -178,8 +178,8 @@ function prevSong() {
 	checkPrivateBack();
 	player.loadVideoById({videoId:listVid[rand].idVid});
 	para.innerHTML = listVid[rand].title;
-	musicPlayer.style.backgroundImage = "url('https://source.unsplash.com/random/600*250/?landscape')";
-	bg.style.backgroundImage = "url('https://source.unsplash.com/random/600*250/?landscape')";
+	musicPlayer.style.backgroundImage = `url('https://source.unsplash.com/random/600*250/?landscape${rand}')`;
+	bg.style.backgroundImage = `url('https://source.unsplash.com/random/600*250/?landscape${rand}')`;
 	playButton(true);			
 }
 
@@ -199,13 +199,13 @@ function nextSong() {
 	checkPrivate();
 	player.loadVideoById({videoId:listVid[rand].idVid});
 	para.innerHTML = listVid[rand].title;
-	musicPlayer.style.backgroundImage = "url('https://source.unsplash.com/random/600*250/?landscape')";
-	bg.style.backgroundImage = "url('https://source.unsplash.com/random/600*250/?landscape')";
+	musicPlayer.style.backgroundImage = `url('https://source.unsplash.com/random/600*250/?landscape${rand}')`;
+	bg.style.backgroundImage = `url('https://source.unsplash.com/random/600*250/?landscape${rand}')`;
 	playButton(true);
 
 }
 
-//Next bai moi khi video het
+// on Song end
 function nextVideo() {
 	if (repeatStatus == 1) {
 		player.loadVideoById({videoId:listVid[rand].idVid});
@@ -214,13 +214,13 @@ function nextVideo() {
 		checkPrivate();
 		player.loadVideoById({videoId:listVid[rand].idVid});
 		para.innerHTML = listVid[rand].title;
-		musicPlayer.style.backgroundImage = "url('https://source.unsplash.com/random/600*250/?landscape')";
-		bg.style.backgroundImage = "url('https://source.unsplash.com/random/600*250/?landscape')";
+		musicPlayer.style.backgroundImage = `url('https://source.unsplash.com/random/600*250/?landscape${rand}')`;
+		bg.style.backgroundImage = `url('https://source.unsplash.com/random/600*250/?landscape${rand}')`;
 	}
 	
 }
 
-//Phat lap lai
+//Repeat
 function repeatVideo () {
 	if (repeatStatus == 0) {
 		repeat.style.opacity = "0.8";
@@ -231,7 +231,7 @@ function repeatVideo () {
 	}
 }
 
-//Kiem tra co phai video private hoac delete khong
+//Check private or deleted video
 function checkPrivate() {
 	if (listVid[rand].title == "Private video" || listVid[rand].title == "Deleted video") {
 		if (rand == listVid.length - 1) {
@@ -254,7 +254,7 @@ function checkPrivateBack() {
 	}
 };
 
-//Khi nhap Playlist Id moi
+//on New Playlist
 function changePlaylistId () {
 	var newId = newPlaylistId.value;
 	if (newId == "") {
@@ -288,7 +288,7 @@ function changePlaylistId () {
 
 }
 
-//Chuyen bai
+//Check song end
 setInterval(function() {
 	if (player.getPlayerState() == 0) {
 		nextVideo();
