@@ -2,4 +2,4 @@
 
 Music Player Youtube use YoutubeAPI
 
-https://s9mple.github.io/lofi-music-player/
+https://lordshenk.github.io/lofi-music-player/
